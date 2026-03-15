@@ -22,10 +22,8 @@ Esse repositório será utilizado para adicionar itens para o desenvolvimento da
 Escolha lógica, a única linguagem dominada pelo grupo em que é possível a produção de uma API.  
 Não é a melhor opção, utilizando o Spring Boot no Java o projeto fica bem mais fácil de se fazer e condizente com a realidade do mercado de trabalho para Java, porém, iria exigir umas 20 a 30 horas de estudo para cada um do projeto.
 
-### 🗄️ MySQL + Docker + DBeaver
-- **MySQL:** Também uma escolha lógica, único banco de dados aprendido pela equipe.
-- **Docker:** Tecnologia onde, sem precisar baixar o banco de dados, conseguimos utilizá-lo de maneira simples e fácil. O Docker roda um container (um servidor onde o banco já está configurado), e a gente apenas acessa da nossa máquina sem precisar baixar nada além do Docker.
-- **DBeaver:** Apenas um client para administrar o banco de dados, como o usado no semestre passado, porém esse é coringa - nele dá pra usar qualquer banco de dados existente.
+### 🗄️ H2 Database
+- **H2 Database:** Por se tratar de um trabalho simples, o banco de dados H2 criaa um banco em memoria, onde podemos administra-lo pelo proprio navegador e não sera necessário a criação de um servidor para o Banco.
 
 ### 📬 Postman
 Postman é um aplicativo de teste simples de se usar. Imagine o cenário onde temos que testar um botão do site que diz "Agendar Horário" mas sem o site feito? O Postman faz isso! Você apenas indica a URL da requisição e ele te mostra o que acontece quando aquela ação é feita. Isso é ótimo para testar a lógica do Java e saber se está correta.
