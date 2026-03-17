@@ -8,5 +8,8 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="jbcrypt-0.4" level="project" />
+    <orderEntry type="library" name="jackson-annotations-3.0-rc5" level="project" />
+    <orderEntry type="library" name="jackson-core-3.0.0-rc5" level="project" />
+    <orderEntry type="library" name="jackson-databind-3.0.0-rc5" level="project" />
   </component>
 </module>
