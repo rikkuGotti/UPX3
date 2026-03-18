@@ -7,7 +7,7 @@ Esse repositório será utilizado para adicionar itens para o desenvolvimento da
 
 ### Back End
 - **API:** Java Puro
-- **Banco de Dados:** MySQL + Docker + DBeaver
+- **Banco de Dados:** H2 Database
 - **Teste de Requisição Web:** Postman
 
 ### Front End
@@ -33,3 +33,74 @@ No início do projeto, é essencial a projeção da interface para que a partir 
 
 ### 🌐 HTML, CSS e JavaScript
 Essas são as tecnologias utilizadas para o front, nossa única alternativa.
+
+# 📌 Funcionalidades da API
+
+## 👤 Usuário
+
+### ➕ Cadastro de Usuário
+- Endpoint: `POST /usuarios`
+- Descrição: Cria um novo usuário na plataforma.
+- Dados esperados:
+  - Nome
+  - Email
+  - Senha
+
+### 🔐 Login
+- Endpoint: `POST /login`
+- Descrição: Autentica o usuário e retorna um token de acesso.
+- Dados esperados:
+  - Email
+  - Senha
+
+### 📋 Listar Usuários (Admin)
+- Endpoint: `GET /usuarios`
+- Descrição: Retorna a lista de todos os usuários.
+- Permissão: Apenas administradores
+
+
+---
+
+## ⚡ Eletroposto
+
+### ➕ Cadastrar Eletroposto
+- Endpoint: `POST /eletropostos`
+- Descrição: Cria um novo eletroposto.
+- Dados esperados:
+  - Nome
+  - Localização
+  - Número de vagas
+  - Tipos de conectores disponíveis
+
+### 📍 Listar Eletropostos
+- Endpoint: `GET /eletropostos`
+- Descrição: Retorna todos os eletropostos cadastrados.
+
+### 🔎 Detalhes do Eletroposto
+- Endpoint: `GET /eletropostos/{id}`
+- Descrição: Retorna informações detalhadas de um eletroposto específico.
+
+
+---
+
+## 📅 Agendamento
+
+### ➕ Criar Agendamento
+- Endpoint: `POST /agendamentos`
+- Descrição: Cria um novo agendamento para uso de um eletroposto.
+- Dados esperados:
+  - ID do usuário
+  - ID do eletroposto
+  - Data e horário
+
+### 📋 Listar Agendamentos do Usuário
+- Endpoint: `GET /agendamentos`
+- Descrição: Retorna todos os agendamentos do usuário autenticado.
+
+### ❌ Cancelar Agendamento
+- Endpoint: `DELETE /agendamentos/{id}`
+- Descrição: Cancela um agendamento existente.
+
+
+
+
