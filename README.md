@@ -1,106 +1,88 @@
 # UPX3
 Esse repositório será utilizado para adicionar itens para o desenvolvimento da UPX3 | ABICAP
 
-# Charge Now ⚡
+# Charge Now ⚡ (Condomínios)
 
-## 🚀 Tecnologias a serem utilizadas *(Sujeito a alteração)*
+## 🚀 Tecnologias a serem utilizadas
 
 ### Back End
-- **API:** Java Puro
-- **Banco de Dados:** H2 Database
+- **Framework:** Spring Boot 4.0 (Java 25)
+- **Banco de Dados:** H2 Database (Em memória)
+- **Segurança/Sessão:** Cookies (JSESSIONID) e HttpSession
 - **Teste de Requisição Web:** Postman
 
 ### Front End
 - **Elaboração de Design:** Figma
-- **Página Web:** HTML, CSS e JavaScript
+- **Página Web:** HTML5, CSS3 e JavaScript (ES6+)
 
 ---
 
 ## 📖 Explicação das escolhas
 
-### ☕ Java Puro
-Escolha lógica, a única linguagem dominada pelo grupo em que é possível a produção de uma API.  
-Não é a melhor opção, utilizando o Spring Boot no Java o projeto fica bem mais fácil de se fazer e condizente com a realidade do mercado de trabalho para Java, porém, iria exigir umas 20 a 30 horas de estudo para cada um do projeto.
+### 🍃 Spring Boot
+Substituímos o Java Puro pelo Spring Boot para agilizar o desenvolvimento. O framework lida com a infraestrutura (servidor Tomcat embutido, injeção de dependência e roteamento), permitindo que o grupo foque na regra de negócio dos pontos de recarga. É a tecnologia padrão do mercado atual.
 
 ### 🗄️ H2 Database
-- **H2 Database:** Por se tratar de um trabalho simples, o banco de dados H2 criaa um banco em memoria, onde podemos administra-lo pelo proprio navegador e não sera necessário a criação de um servidor para o Banco.
+Por se tratar de um projeto para condomínios, o banco de dados H2 é ideal. Ele roda em memória, facilitando o desenvolvimento sem a necessidade de configurar servidores de banco de dados complexos (como MySQL ou PostgreSQL) em cada máquina do grupo.
 
 ### 📬 Postman
-Postman é um aplicativo de teste simples de se usar. Imagine o cenário onde temos que testar um botão do site que diz "Agendar Horário" mas sem o site feito? O Postman faz isso! Você apenas indica a URL da requisição e ele te mostra o que acontece quando aquela ação é feita. Isso é ótimo para testar a lógica do Java e saber se está correta.
+Utilizado para validar os Endpoints da API antes mesmo do Front End estar pronto. Com ele, testamos o fluxo de cadastro, login e reserva de pontos de recarga simulando o comportamento real do navegador.
 
 ### 🎨 Figma
-No início do projeto, é essencial a projeção da interface para que a partir dela produzirmos o resto, e o Figma é perfeito para isso.
+Utilizado para o protótipo de alta fidelidade. Essencial para definir como o morador do condomínio visualizará a disponibilidade das vagas de recarga.
 
 ### 🌐 HTML, CSS e JavaScript
-Essas são as tecnologias utilizadas para o front, nossa única alternativa.
+Base do desenvolvimento Web para criar uma interface responsiva onde o usuário poderá gerenciar seus agendamentos de recarga de forma intuitiva.
 
-# 📌 Funcionalidades da API
+---
 
-## 👤 Usuário
+# 📌 Funcionalidades da API (Ponto de Recarga em Condomínios)
+
+## 👤 Usuário & Autenticação
 
 ### ➕ Cadastro de Usuário
-- Endpoint: `POST /usuarios`
-- Descrição: Cria um novo usuário na plataforma.
-- Dados esperados:
-  - Nome
-  - Email
-  - Senha
+- **Endpoint:** `POST /auth/cadastro`
+- **Descrição:** Registra um novo morador e seu veículo elétrico (vinculado via Cascade JPA).
+- **Dados esperados:** Nome, Email, Senha, Dados do Veículo (Placa, Modelo, Conector).
 
-### 🔐 Login
-- Endpoint: `POST /login`
-- Descrição: Autentica o usuário e retorna um token de acesso.
-- Dados esperados:
-  - Email
-  - Senha
+### 🔐 Login (Sessão por Cookie)
+- **Endpoint:** `POST /auth/login`
+- **Descrição:** Autentica o usuário via `@RequestParam`. Se bem-sucedido, cria uma `HttpSession` e devolve um cookie `JSESSIONID`.
 
-### 📋 Listar Usuários (Admin)
-- Endpoint: `GET /usuarios`
-- Descrição: Retorna a lista de todos os usuários.
-- Permissão: Apenas administradores
-
+### 🔍 Check de Sessão
+- **Endpoint:** `GET /auth/check`
+- **Descrição:** Verifica se o usuário possui um cookie válido e retorna os dados de quem está logado.
 
 ---
 
-## ⚡ Eletroposto
+## 🔌 Pontos de Recarga
 
-### ➕ Cadastrar Eletroposto
-- Endpoint: `POST /eletropostos`
-- Descrição: Cria um novo eletroposto.
-- Dados esperados:
-  - Nome
-  - Localização
-  - Número de vagas
-  - Tipos de conectores disponíveis
+### ➕ Cadastrar Ponto (Admin)
+- **Endpoint:** `POST /pontos`
+- **Descrição:** Registra uma nova estação de recarga no condomínio.
+- **Dados esperados:** Identificação (Ex: Vaga 42), Tipo de Carga, Status (Disponível/Ocupado).
 
-### 📍 Listar Eletropostos
-- Endpoint: `GET /eletropostos`
-- Descrição: Retorna todos os eletropostos cadastrados.
+### 📍 Listar Pontos Disponíveis
+- **Endpoint:** `GET /pontos/disponiveis`
+- **Descrição:** Retorna todos os pontos de recarga que não possuem agendamento no momento.
 
-### 🔎 Detalhes do Eletroposto
-- Endpoint: `GET /eletropostos/{id}`
-- Descrição: Retorna informações detalhadas de um eletroposto específico.
-
+### 🔎 Detalhes do Ponto
+- **Endpoint:** `GET /pontos/{id}`
+- **Descrição:** Retorna informações técnicas sobre a potência e tipo de conector de um ponto específico.
 
 ---
 
-## 📅 Agendamento
+## 📅 Reservas (Agendamentos)
 
-### ➕ Criar Agendamento
-- Endpoint: `POST /agendamentos`
-- Descrição: Cria um novo agendamento para uso de um eletroposto.
-- Dados esperados:
-  - ID do usuário
-  - ID do eletroposto
-  - Data e horário
+### ➕ Criar Reserva
+- **Endpoint:** `POST /reservas`
+- **Descrição:** O morador reserva um horário para carregar seu veículo.
+- **Validação:** Verifica via `HttpSession` se o usuário está logado antes de permitir a reserva.
 
-### 📋 Listar Agendamentos do Usuário
-- Endpoint: `GET /agendamentos`
-- Descrição: Retorna todos os agendamentos do usuário autenticado.
+### 📋 Minhas Reservas
+- **Endpoint:** `GET /reservas/meus`
+- **Descrição:** Retorna apenas os agendamentos do morador autenticado (filtrado via ID da sessão).
 
-### ❌ Cancelar Agendamento
-- Endpoint: `DELETE /agendamentos/{id}`
-- Descrição: Cancela um agendamento existente.
-
-
-
-
+### ❌ Cancelar Reserva
+- **Endpoint:** `DELETE /reservas/{id}`
+- **Descrição:** Libera o ponto de recarga para outros moradores.
