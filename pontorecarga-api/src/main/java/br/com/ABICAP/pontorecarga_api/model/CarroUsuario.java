@@ -16,8 +16,9 @@ public class CarroUsuario {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "marca", length = 255, nullable = false)
-    private String marca;
+    private Marcas marca;
 
 
     @Column(name = "placa", length = 255, nullable = false)
@@ -40,7 +41,7 @@ public class CarroUsuario {
     @OneToOne(mappedBy = "carroUsuario")
     private Usuario usuario;
 
-    public CarroUsuario(Integer id, String marca, String placa, String model,
+    public CarroUsuario(Integer id, Marcas marca, String placa, String model,
                         BigDecimal capacidadeBateria, TipoConector tipoConector,
                         TipoCarga tipoCarga, Usuario usuario) {
         this.id = id;
