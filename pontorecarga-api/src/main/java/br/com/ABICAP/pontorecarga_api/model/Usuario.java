@@ -1,5 +1,6 @@
 package br.com.ABICAP.pontorecarga_api.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -24,11 +25,16 @@ public class Usuario {
     @Column(name = "email", length = 255, nullable = false)
     private String email;
 
+    @JsonIgnore
     @Column(name = "senhaHash", length = 60, nullable = false)
     private String senhaHash;
 
     @Column(name = "dataCriacaoConta")
     private LocalDateTime dataCriacaoConta;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "role", length = 5, nullable = false)
+    private TipoUsuario tipoUsuario = TipoUsuario.USER;
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "carro_id", referencedColumnName = "id")

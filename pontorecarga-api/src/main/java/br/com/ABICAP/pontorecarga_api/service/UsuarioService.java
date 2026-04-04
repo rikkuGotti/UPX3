@@ -5,6 +5,7 @@ import br.com.ABICAP.pontorecarga_api.model.Usuario;
 import br.com.ABICAP.pontorecarga_api.repository.CarroRepository;
 import br.com.ABICAP.pontorecarga_api.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -13,6 +14,9 @@ public class UsuarioService {
     private UsuarioRepository usuarioRepository;
 
     private CarroRepository carroRepository;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @Autowired
     public UsuarioService(UsuarioRepository usuarioRepository, CarroRepository carroRepository) {
@@ -46,6 +50,9 @@ public class UsuarioService {
                                        " e tente novamente");
         }
 
+        String senhaEncode = usuario.getSenhaHash();
+        usuario.setSenhaHash(passwordEncoder.encode(senhaEncode));
+
         return usuarioRepository.save(usuario);
     }
 
@@ -54,7 +61,7 @@ public class UsuarioService {
         return usuarioRepository.findByUsuario(usuario)
                 .map(usuarioBanco -> {
 
-                    if (usuarioBanco.getSenhaHash().equals(senha)) {
+                    if (passwordEncoder.matches(senha, usuarioBanco.getSenhaHash())) {
                         return true;
                     }
                     return false;
