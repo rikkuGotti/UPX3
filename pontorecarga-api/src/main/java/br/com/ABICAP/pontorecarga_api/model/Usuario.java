@@ -2,17 +2,22 @@ package br.com.ABICAP.pontorecarga_api.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
+import org.jspecify.annotations.Nullable;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDateTime;
+import java.util.Collection;
+import java.util.List;
 
 @Entity
 @Table(name = "usuarios")
 @Getter@Setter
 @ToString
-public class Usuario {
+
+public class Usuario implements UserDetails {
 
     @Id
     @Column(name = "id")
@@ -25,7 +30,6 @@ public class Usuario {
     @Column(name = "email", length = 255, nullable = false)
     private String email;
 
-    @JsonIgnore
     @Column(name = "senhaHash", length = 60, nullable = false)
     private String senhaHash;
 
@@ -40,19 +44,45 @@ public class Usuario {
     @JoinColumn(name = "carro_id", referencedColumnName = "id")
     private CarroUsuario carroUsuario;
 
-    public Usuario(Integer id, String usuario, String email, String senhaHash,
-                   LocalDateTime dataCriacaoConta, CarroUsuario carroUsuario) {
-        this.id = id;
-        this.usuario = usuario;
-        this.email = email;
-        this.senhaHash = senhaHash;
-        this.dataCriacaoConta = LocalDateTime.now();
-        this.carroUsuario = carroUsuario;
-    }
-
     public Usuario() {
-
     }
 
+    // ----------------------
+    //SPRING SECURITY METODOS
+    // ----------------------
 
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public String getUsername() {
+        return this.usuario;
+    }
+
+    @Override
+    public @Nullable String getPassword() {
+        return this.senhaHash;
+    }
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of(new SimpleGrantedAuthority("ROLE_" + this.tipoUsuario.name()));
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
 }

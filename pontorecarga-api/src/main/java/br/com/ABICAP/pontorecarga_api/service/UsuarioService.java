@@ -15,21 +15,29 @@ public class UsuarioService {
 
     private CarroRepository carroRepository;
 
-    @Autowired
+
     private PasswordEncoder passwordEncoder;
 
     @Autowired
-    public UsuarioService(UsuarioRepository usuarioRepository, CarroRepository carroRepository) {
+    public UsuarioService(UsuarioRepository usuarioRepository, CarroRepository carroRepository, PasswordEncoder passwordEncoder) {
         this.usuarioRepository = usuarioRepository;
         this.carroRepository = carroRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
 
 
     public Usuario  cadastroUsuario(Usuario usuario){
-        if (usuario.getEmail().isEmpty() || usuario.getUsuario().isEmpty() ||  usuario.getSenhaHash().isEmpty()){
-            throw new RuntimeException("Algum campo do cadastro do usuario não está preenchido, cheque " +
-                    "as informações e tente novamente");
+        if (usuario.getEmail() == null || usuario.getEmail().isEmpty()) {
+            throw new RuntimeException("Email é obrigatório");
+        }
+
+        if (usuario.getUsuario() == null || usuario.getUsuario().isEmpty()) {
+            throw new RuntimeException("Usuário é obrigatório");
+        }
+
+        if (usuario.getSenhaHash() == null || usuario.getSenhaHash().isEmpty()) {
+            throw new RuntimeException("Senha é obrigatória");
         }
 
 
@@ -57,16 +65,22 @@ public class UsuarioService {
     }
 
     public boolean autenticar(String usuario, String senha) {
+        System.out.println("Tentando autenticar: " + usuario);
 
         return usuarioRepository.findByUsuario(usuario)
                 .map(usuarioBanco -> {
+                    System.out.println("Usuário encontrado: " + usuarioBanco.getUsuario());
+                    System.out.println("Senha do banco: " + usuarioBanco.getSenhaHash());
+                    System.out.println("Senha fornecida: " + senha);
 
-                    if (passwordEncoder.matches(senha, usuarioBanco.getSenhaHash())) {
-                        return true;
-                    }
-                    return false;
+                    boolean matches = passwordEncoder.matches(senha, usuarioBanco.getSenhaHash());
+                    System.out.println("Senha correta? " + matches);
+
+                    return matches;
                 })
-
-                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+                .orElseThrow(() -> {
+                    System.out.println("Usuário NÃO encontrado: " + usuario);
+                    return new RuntimeException("Usuário não encontrado");
+                });
     }
 }
