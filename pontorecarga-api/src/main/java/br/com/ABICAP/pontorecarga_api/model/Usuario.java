@@ -17,7 +17,9 @@ import java.util.List;
 @Getter@Setter
 @ToString
 
-public class Usuario implements UserDetails {
+public class Usuario
+        implements UserDetails
+{
 
     @Id
     @Column(name = "id")

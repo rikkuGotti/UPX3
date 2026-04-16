@@ -5,18 +5,21 @@ import br.com.ABICAP.pontorecarga_api.model.Usuario;
 import br.com.ABICAP.pontorecarga_api.repository.CarroRepository;
 import br.com.ABICAP.pontorecarga_api.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+//import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
 public class UsuarioService {
 
+
+    private PasswordEncoder passwordEncoder;
+
     private UsuarioRepository usuarioRepository;
 
     private CarroRepository carroRepository;
 
 
-    private PasswordEncoder passwordEncoder;
 
     @Autowired
     public UsuarioService(UsuarioRepository usuarioRepository, CarroRepository carroRepository, PasswordEncoder passwordEncoder) {

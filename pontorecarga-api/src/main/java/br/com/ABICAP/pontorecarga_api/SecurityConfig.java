@@ -21,29 +21,15 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-
                 .csrf(csrf -> csrf.disable())
-
-
                 .authorizeHttpRequests(authorize -> authorize
-
-                        .requestMatchers("/auth/cadastro", "/auth/login", "/h2-console/**").permitAll()
-
-                        .requestMatchers("/admin/**").hasRole("ADMIN")
-
-                        .anyRequest().authenticated()
-
-                        .requestMatchers("/usuario")
+                        .anyRequest().permitAll()  // Libera tudo
                 )
-
-
+                .headers(headers -> headers
+                        .frameOptions(frame -> frame.disable())
+                )
                 .formLogin(form -> form.disable())
-
-
-                .httpBasic(basic -> basic.disable())
-
-
-                .headers(headers -> headers.frameOptions(frame -> frame.disable()));
+                .httpBasic(basic -> basic.disable());
 
         return http.build();
     }

@@ -1,5 +1,7 @@
 package br.com.ABICAP.pontorecarga_api.controller;
 
+import br.com.ABICAP.pontorecarga_api.model.DTOCarroUsuario;
+import br.com.ABICAP.pontorecarga_api.model.DTORespostaUsuario;
 import br.com.ABICAP.pontorecarga_api.model.Usuario;
 import br.com.ABICAP.pontorecarga_api.repository.UsuarioRepository;
 import br.com.ABICAP.pontorecarga_api.service.UsuarioService;
@@ -37,7 +39,16 @@ public class UsuarioController {
         Usuario usuario = usuarioRepository.findByUsuario(usuarioEstaLogado)
                 .orElseThrow(() -> new RuntimeException("Usuario nao encontrado"));
 
+        DTORespostaUsuario respostaUsuario = new DTORespostaUsuario();
+        respostaUsuario.setId(usuario.getId());
+        respostaUsuario.setUsuario(usuario.getUsuario());
+        respostaUsuario.setEmail(usuario.getEmail());
+        DTOCarroUsuario respostaCarroUsuario = new DTOCarroUsuario();
+        respostaCarroUsuario.setId(usuario.getCarroUsuario().getId());
+        respostaCarroUsuario.setModelo(usuario.getCarroUsuario().getModel());
 
-        return ResponseEntity.ok(usuario);
+        respostaUsuario.setCarroUsuario(respostaCarroUsuario);
+
+        return ResponseEntity.ok(respostaUsuario);
     }
 }

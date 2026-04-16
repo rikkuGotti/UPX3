@@ -3,12 +3,14 @@ package br.com.ABICAP.pontorecarga_api.model;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 import java.math.BigDecimal;
 
 @Entity
 @Table(name = "carroUsuario")
 @Getter@Setter
+@ToString
 public class CarroUsuario {
 
     @Id
