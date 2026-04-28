@@ -23,7 +23,7 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(authorize -> authorize
-                        .anyRequest().permitAll()  // Libera tudo
+                        .anyRequest().permitAll()
                 )
                 .headers(headers -> headers
                         .frameOptions(frame -> frame.disable())

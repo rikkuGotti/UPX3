@@ -9,6 +9,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -36,7 +37,7 @@ public class Usuario
     private String senhaHash;
 
     @Column(name = "dataCriacaoConta")
-    private LocalDateTime dataCriacaoConta;
+    private LocalDateTime dataCriacaoConta = LocalDateTime.now();
 
     @Enumerated(EnumType.STRING)
     @Column(name = "role", length = 5, nullable = false)
@@ -45,6 +46,9 @@ public class Usuario
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "carro_id", referencedColumnName = "id")
     private CarroUsuario carroUsuario;
+
+    @OneToMany(mappedBy = "usuario")
+    private List<Reserva> reservas = new ArrayList<>();
 
     public Usuario() {
     }
