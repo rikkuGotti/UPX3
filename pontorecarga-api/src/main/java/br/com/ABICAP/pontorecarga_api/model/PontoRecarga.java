@@ -36,6 +36,7 @@ public class PontoRecarga {
 
     // CARACTERÍSTICAS ELÉTRICAS
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "tipoCarga")
     private TipoCarga tipoCarga;
     @Column(name = "potenciaMaximaKW")
@@ -48,6 +49,7 @@ public class PontoRecarga {
 
     // CONECTORES
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "tipoConector")
     private TipoConector tipoConector;
     @Column(name = "quantidadeConectores")
@@ -66,6 +68,7 @@ public class PontoRecarga {
 
     // STATUS OPERACIONAL
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "statusPonto")
     private StatusPonto statusPonto;
     @Column(name = "statusCabo")

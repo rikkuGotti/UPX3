@@ -1,9 +1,10 @@
 package br.com.ABICAP.pontorecarga_api.controller;
 
-import br.com.ABICAP.pontorecarga_api.model.DTOCarroUsuario;
-import br.com.ABICAP.pontorecarga_api.model.DTORespostaUsuario;
+import br.com.ABICAP.pontorecarga_api.dto.DTOCarroUsuario;
+import br.com.ABICAP.pontorecarga_api.dto.DTORespostaUsuario;
 import br.com.ABICAP.pontorecarga_api.model.Usuario;
 import br.com.ABICAP.pontorecarga_api.repository.UsuarioRepository;
+import br.com.ABICAP.pontorecarga_api.service.AdminService;
 import br.com.ABICAP.pontorecarga_api.service.UsuarioService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +21,7 @@ public class UsuarioController {
     private UsuarioService usuarioService;
 
     private UsuarioRepository usuarioRepository;
+
 
     @Autowired
     public UsuarioController(UsuarioService usuarioService, UsuarioRepository usuarioRepository) {

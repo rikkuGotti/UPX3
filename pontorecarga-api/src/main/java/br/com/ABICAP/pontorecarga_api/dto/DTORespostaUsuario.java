@@ -1,4 +1,4 @@
-package br.com.ABICAP.pontorecarga_api.model;
+package br.com.ABICAP.pontorecarga_api.dto;
 
 import lombok.Getter;
 import lombok.Setter;

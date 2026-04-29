@@ -1,8 +1,12 @@
 package br.com.ABICAP.pontorecarga_api.controller;
 
+import br.com.ABICAP.pontorecarga_api.dto.DTOPontoRecargaRequest;
+import br.com.ABICAP.pontorecarga_api.model.PontoRecarga;
 import br.com.ABICAP.pontorecarga_api.model.TipoUsuario;
 import br.com.ABICAP.pontorecarga_api.model.Usuario;
 import br.com.ABICAP.pontorecarga_api.repository.UsuarioRepository;
+import br.com.ABICAP.pontorecarga_api.service.AdminService;
+import br.com.ABICAP.pontorecarga_api.service.PontoRecargaService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -13,10 +17,17 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/admin")
 public class AdminController {
 
-    UsuarioRepository usuarioRepository;
+    private UsuarioRepository usuarioRepository;
 
-    public AdminController(UsuarioRepository usuarioRepository) {
+    private AdminService adminService;
+
+    private PontoRecargaService pontoRecargaService;
+
+    @Autowired
+    public AdminController(UsuarioRepository usuarioRepository, AdminService adminService, PontoRecargaService pontoRecargaService) {
         this.usuarioRepository = usuarioRepository;
+        this.adminService = adminService;
+        this.pontoRecargaService = pontoRecargaService;
     }
 
     @GetMapping("/teste")
@@ -32,6 +43,17 @@ public class AdminController {
 
 
         return ResponseEntity.ok("Sucesso");
+    }
+
+    @PostMapping("/criarponto")
+    public ResponseEntity<?> criarPonto(@RequestBody DTOPontoRecargaRequest request, HttpSession session){
+
+        adminService.validarAdmin(session);
+
+        PontoRecarga ponto = pontoRecargaService.cadastrarPontoRecarga(request);
+
+
+        return ResponseEntity.status(201).body(ponto);
     }
 
 

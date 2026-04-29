@@ -1,9 +1,11 @@
 package br.com.ABICAP.pontorecarga_api.service;
 
 import br.com.ABICAP.pontorecarga_api.model.CarroUsuario;
+import br.com.ABICAP.pontorecarga_api.model.TipoUsuario;
 import br.com.ABICAP.pontorecarga_api.model.Usuario;
 import br.com.ABICAP.pontorecarga_api.repository.CarroRepository;
 import br.com.ABICAP.pontorecarga_api.repository.UsuarioRepository;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 //import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -86,4 +88,21 @@ public class UsuarioService {
                     return new RuntimeException("Usuário não encontrado");
                 });
     }
+
+    public Usuario validarUsuario(HttpSession session){
+        String usuarioLogado = (String) session.getAttribute("USUARIO_LOGADO");
+
+        if (usuarioLogado == null) {
+            throw new RuntimeException("Usuário não está logado");
+        }
+
+        Usuario usuario = usuarioRepository.findByUsuario(usuarioLogado)
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+
+
+        return usuario;
+    }
+
+
+
 }
