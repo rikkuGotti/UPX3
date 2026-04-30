@@ -22,8 +22,8 @@ public class DTOReservaRequest {
     private LocalDate data;
 
     @NotNull(message = "Horário de início é obrigatório")
-    private LocalTime horaInicio;  // Pode ser 08:53, 15:06, etc.
+    private LocalTime horaInicio;
 
     @NotNull(message = "Horário de fim é obrigatório")
-    private LocalTime horaFim;      // Pode ser 09:10, 15:23, etc.
+    private LocalTime horaFim;
 }

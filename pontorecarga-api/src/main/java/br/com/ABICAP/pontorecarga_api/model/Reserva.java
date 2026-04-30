@@ -38,4 +38,8 @@ public class Reserva {
     @Column(name = "duracaoMinutos")
     private Integer duracaoMinutos;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status")
+    private StatusReserva statusReserva;
+
 }
