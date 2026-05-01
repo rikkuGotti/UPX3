@@ -42,17 +42,108 @@ public class ReservaService {
         List<Reserva> reservas = reservaRepository.findByData(data);
 
         for(Reserva i: reservas){
-            LocalTime inicioAtual = i.getInicio();
-            LocalTime fimAtual = i.getFim();
+            if(i.getStatusReserva().equals(StatusReserva.CONFIRMADA)) {
+                LocalTime inicioAtual = i.getInicio();
+                LocalTime fimAtual = i.getFim();
 
 
-            if(inicio.isBefore(fimAtual) && fim.isAfter(inicioAtual)){
-                return false;
+                if (inicio.isBefore(fimAtual) && fim.isAfter(inicioAtual)) {
+                    return false;
+                }
             }
         }
 
         return true;
     }
+
+    public void validarRegraHorario(Reserva reserva){
+        LocalTime inicio = reserva.getInicio();
+        LocalTime fim = reserva.getFim();
+        LocalDate data = reserva.getData();
+        Integer minutos = reserva.getDuracaoMinutos();
+
+        if(minutos < 30){
+            throw new RuntimeException("Tempo minimo da reserva nao foi atingido");
+        }
+
+        if(LocalTime.now().isBefore(LocalTime.of(21, 0)) &&
+                LocalTime.now().isAfter(LocalTime.of(9, 0))) {
+            if (minutos > 240){
+                throw new RuntimeException("Nesse horario nao e permitido uma reserva maior que 4 horas");
+            }
+
+        }
+
+        if(minutos > 490){
+            throw new RuntimeException("Nao e possivel reservar o ponto por mais de 8 horas");
+        }
+
+    }
+
+    public void verificarLimites(Usuario usuario, Integer minutos, LocalDate dataNovaReserva) {
+
+        LocalDate hoje = LocalDate.now();
+        LocalDate dataMaxima = hoje.plusDays(1);
+
+        if (dataNovaReserva.isBefore(hoje)) {
+            throw new RuntimeException("Não é permitido reservar em datas passadas");
+        }
+
+        if (dataNovaReserva.isAfter(dataMaxima)) {
+            throw new RuntimeException("Só é permitido reservar com no máximo 1 dia de antecedência");
+        }
+
+        int reservasHoje = reservaRepository.countByUsuarioAndDataAndStatusReserva(
+                usuario, LocalDate.now(), StatusReserva.CONFIRMADA
+        );
+
+        if (reservasHoje >= 2) {
+            throw new RuntimeException("Limite de 2 reservas por dia atingido");
+        }
+
+
+        int reservasAmanha = reservaRepository.countByUsuarioAndDataAndStatusReserva(
+                usuario, LocalDate.now().plusDays(1), StatusReserva.CONFIRMADA
+        );
+
+        if (dataNovaReserva.isAfter(LocalDate.now()) && reservasAmanha >= 2) {
+            throw new RuntimeException("Limite de 2 reservas para o dia de amanha");
+        }
+
+
+        LocalDate inicio = LocalDate.now().minusDays(7);
+        LocalDate fim = LocalDate.now();
+
+        int reservasSemana = reservaRepository.countByUsuarioAndDataBetweenAndStatusReserva(
+                usuario, inicio, fim, StatusReserva.CONFIRMADA
+        );
+
+        if (reservasSemana >= 5) {
+            throw new RuntimeException("Limite de 5 reservas por semana atingido");
+        }
+
+
+        List<Reserva> reservasUltimaSemana = reservaRepository
+                .findByUsuarioAndDataBetweenAndStatusReserva(usuario, inicio, fim, StatusReserva.CONFIRMADA);
+
+        int duracaoReservasExistentes = 0;
+
+        for(Reserva i : reservasUltimaSemana){
+            duracaoReservasExistentes += i.getDuracaoMinutos();
+        }
+
+        int duracaoTotalComNova = duracaoReservasExistentes + minutos;
+        int duracaoMaximaPermitida = 960;
+
+        if (duracaoTotalComNova > duracaoMaximaPermitida) {
+            throw new RuntimeException(
+                    "Limite de 16 horas por semana excedido."
+            );
+        }
+
+    }
+
+
 
     public Reserva criarReserva(DTOReservaRequest request, Usuario usuario){
 
@@ -78,6 +169,8 @@ public class ReservaService {
         reserva.setDuracaoMinutos((int) minutos);
         reserva.setStatusReserva(StatusReserva.CONFIRMADA);
 
+        validarRegraHorario(reserva);
+        verificarLimites(usuario, reserva.getDuracaoMinutos(), reserva.getData());
 
         return  reservaRepository.save(reserva);
     }
@@ -181,7 +274,4 @@ public class ReservaService {
         reserva.setStatusReserva(StatusReserva.CANCELADA);
         reservaRepository.save(reserva);
     }
-
-
-
 }
