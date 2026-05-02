@@ -6,6 +6,7 @@ import lombok.Setter;
 import lombok.ToString;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 @Entity
@@ -28,12 +29,10 @@ public class Reserva {
     @JoinColumn(name = "usuario_id", nullable = false)
     private Usuario usuario;
 
-    @Column(name = "data")
-    private LocalDate data;
     @Column(name = "inicio")
-    private LocalTime inicio;
+    private LocalDateTime inicio;
     @Column(name = "fim")
-    private LocalTime fim;
+    private LocalDateTime fim;
 
     @Column(name = "duracaoMinutos")
     private Integer duracaoMinutos;

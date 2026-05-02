@@ -1,5 +1,6 @@
 package br.com.ABICAP.pontorecarga_api.controller;
 
+import br.com.ABICAP.pontorecarga_api.dto.DTOAtualizarDadosRequest;
 import br.com.ABICAP.pontorecarga_api.dto.DTOCarroUsuario;
 import br.com.ABICAP.pontorecarga_api.dto.DTORespostaUsuario;
 import br.com.ABICAP.pontorecarga_api.model.Usuario;
@@ -10,10 +11,7 @@ import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/usuario")
@@ -30,8 +28,14 @@ public class UsuarioController {
         this.usuarioRepository = usuarioRepository;
     }
 
-//    @PutMapping("/meu-perfil/alterar-dados")
-//    public ResponseEntity
+    @PatchMapping("/meu-perfil/alterar-dados/{id}")
+    public ResponseEntity<?> alterarDados(@RequestBody DTOAtualizarDadosRequest dados, HttpSession session){
+        usuarioService.validarUsuario(session);
+
+
+
+        return ResponseEntity.status(201).body("ok");
+    }
 
     @GetMapping("/meu-perfil")
     public ResponseEntity<?> getPerfil(HttpSession session){

@@ -1,5 +1,6 @@
 package br.com.ABICAP.pontorecarga_api.service;
 
+import br.com.ABICAP.pontorecarga_api.dto.DTOAtualizarDadosRequest;
 import br.com.ABICAP.pontorecarga_api.model.CarroUsuario;
 import br.com.ABICAP.pontorecarga_api.model.TipoUsuario;
 import br.com.ABICAP.pontorecarga_api.model.Usuario;
@@ -101,6 +102,10 @@ public class UsuarioService {
 
 
         return usuario;
+    }
+
+    public Usuario alterarDados(DTOAtualizarDadosRequest dados){
+        
     }
 
 

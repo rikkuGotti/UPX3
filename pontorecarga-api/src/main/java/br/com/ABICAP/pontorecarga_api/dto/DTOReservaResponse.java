@@ -6,6 +6,7 @@ import lombok.Setter;
 import lombok.ToString;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 @Getter@Setter
@@ -15,9 +16,8 @@ public class DTOReservaResponse {
     private Integer id;
     private Integer pontoRecargaId;
     private String pontoLocalizacao;
-    private LocalDate data;
-    private LocalTime horaInicio;
-    private LocalTime horaFim;
+    private LocalDateTime horaInicio;
+    private LocalDateTime horaFim;
     private Integer duracaoMinutos;
     private String status;
     private String usuarioNome;
