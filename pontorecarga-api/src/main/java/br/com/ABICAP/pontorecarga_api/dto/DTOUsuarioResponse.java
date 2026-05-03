@@ -6,14 +6,10 @@ import lombok.ToString;
 
 @Getter@Setter
 @ToString
-public class DTOCarroUsuario {
+public class DTOUsuarioResponse {
 
     private int id;
-
-    private String marca;
-
-    private  String placa;
-
-    private String modelo;
-
+    private String usuario;
+    private String email;
+    private DTOCarroUsuarioResponse carroUsuario;
 }

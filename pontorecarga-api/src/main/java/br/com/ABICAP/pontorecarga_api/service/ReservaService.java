@@ -10,6 +10,7 @@ import br.com.ABICAP.pontorecarga_api.repository.CarroRepository;
 import br.com.ABICAP.pontorecarga_api.repository.PontoRecargaRepository;
 import br.com.ABICAP.pontorecarga_api.repository.ReservaRepository;
 import br.com.ABICAP.pontorecarga_api.repository.UsuarioRepository;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -133,7 +134,7 @@ public class ReservaService {
         }
     }
 
-    public Reserva criarReserva(DTOReservaRequest request, Usuario usuario) {
+    public Reserva criarReserva(@Valid DTOReservaRequest request, Usuario usuario) {
 
         PontoRecarga pontoRecarga = pontoRecargaRepository.findById(request.getPontoRecargaId())
                 .orElseThrow(() -> new RuntimeException("Ponto nao encontrado"));

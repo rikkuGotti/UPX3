@@ -1,9 +1,12 @@
 package br.com.ABICAP.pontorecarga_api.controller;
 
 
+import br.com.ABICAP.pontorecarga_api.dto.DTOCriarContaRequest;
+import br.com.ABICAP.pontorecarga_api.dto.DTOLoginUsuarioRequest;
 import br.com.ABICAP.pontorecarga_api.model.Usuario;
 import br.com.ABICAP.pontorecarga_api.service.UsuarioService;
 import jakarta.servlet.http.HttpSession;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,13 +27,16 @@ public class AuthController {
     }
 
     @PostMapping("/cadastro")
-    public Usuario cadastroUsuario(@RequestBody Usuario usuario){
+    public Usuario cadastroUsuario(@RequestBody DTOCriarContaRequest request){
 
-        return usuarioService.cadastroUsuario(usuario);
+        return usuarioService.cadastroUsuario(request);
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestParam String usuario, @RequestParam String senha, HttpSession session){
+    public ResponseEntity<?> login(@RequestBody @Valid DTOLoginUsuarioRequest login, HttpSession session){
+
+        String usuario = login.getLogin();
+        String senha = login.getSenha();
 
         boolean autenticado = usuarioService.autenticar(usuario, senha);
 

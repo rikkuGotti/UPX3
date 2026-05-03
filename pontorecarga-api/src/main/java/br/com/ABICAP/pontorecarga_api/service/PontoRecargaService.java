@@ -7,6 +7,7 @@ import br.com.ABICAP.pontorecarga_api.model.TipoCarga;
 import br.com.ABICAP.pontorecarga_api.model.TipoConector;
 import br.com.ABICAP.pontorecarga_api.repository.PontoRecargaRepository;
 import br.com.ABICAP.pontorecarga_api.repository.UsuarioRepository;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -23,7 +24,7 @@ public class PontoRecargaService {
         this.pontoRecargaRepository = pontoRecargaRepository;
     }
 
-    public PontoRecarga cadastrarPontoRecarga(DTOPontoRecargaRequest request){
+    public PontoRecarga cadastrarPontoRecarga(@Valid DTOPontoRecargaRequest request){
 
         if (pontoRecargaRepository.existsByCodigoPatrimonio(request.getCodigoPatrimonio())) {
             throw new RuntimeException("Já existe um ponto com código: " + request.getCodigoPatrimonio());

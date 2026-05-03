@@ -1,11 +1,11 @@
 package br.com.ABICAP.pontorecarga_api.controller;
 
 import br.com.ABICAP.pontorecarga_api.dto.DTOAtualizarDadosRequest;
-import br.com.ABICAP.pontorecarga_api.dto.DTOCarroUsuario;
-import br.com.ABICAP.pontorecarga_api.dto.DTORespostaUsuario;
+import br.com.ABICAP.pontorecarga_api.dto.DTOCarroUsuarioResponse;
+import br.com.ABICAP.pontorecarga_api.dto.DTOTrocarCarroRequest;
+import br.com.ABICAP.pontorecarga_api.dto.DTOUsuarioResponse;
 import br.com.ABICAP.pontorecarga_api.model.Usuario;
 import br.com.ABICAP.pontorecarga_api.repository.UsuarioRepository;
-import br.com.ABICAP.pontorecarga_api.service.AdminService;
 import br.com.ABICAP.pontorecarga_api.service.UsuarioService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,13 +28,22 @@ public class UsuarioController {
         this.usuarioRepository = usuarioRepository;
     }
 
-    @PatchMapping("/meu-perfil/alterar-dados/{id}")
+    @PatchMapping("/meu-perfil/alterar-dados")
     public ResponseEntity<?> alterarDados(@RequestBody DTOAtualizarDadosRequest dados, HttpSession session){
-        usuarioService.validarUsuario(session);
+        Usuario usuario = usuarioService.validarUsuario(session);
 
+        usuarioService.alterarDados(dados, usuario);
 
+        return ResponseEntity.status(201).body("Alteracao feita com sucesso");
+    }
 
-        return ResponseEntity.status(201).body("ok");
+    @PutMapping("/meu-perfil/alterar-dados-carro")
+    public ResponseEntity<?> alterarCarro(@RequestBody DTOTrocarCarroRequest dados, HttpSession session){
+        Usuario usuario = usuarioService.validarUsuario(session);
+
+        usuarioService.alterarCarro(dados, usuario);
+
+        return ResponseEntity.status(201).body("Carro atualizado com sucesso");
     }
 
     @GetMapping("/meu-perfil")
@@ -49,11 +58,11 @@ public class UsuarioController {
         Usuario usuario = usuarioRepository.findByUsuario(usuarioEstaLogado)
                 .orElseThrow(() -> new RuntimeException("Usuario nao encontrado"));
 
-        DTORespostaUsuario respostaUsuario = new DTORespostaUsuario();
+        DTOUsuarioResponse respostaUsuario = new DTOUsuarioResponse();
         respostaUsuario.setId(usuario.getId());
         respostaUsuario.setUsuario(usuario.getUsuario());
         respostaUsuario.setEmail(usuario.getEmail());
-        DTOCarroUsuario respostaCarroUsuario = new DTOCarroUsuario();
+        DTOCarroUsuarioResponse respostaCarroUsuario = new DTOCarroUsuarioResponse();
         respostaCarroUsuario.setId(usuario.getCarroUsuario().getId());
         respostaCarroUsuario.setModelo(usuario.getCarroUsuario().getModel());
 
