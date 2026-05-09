@@ -35,7 +35,7 @@ public class UsuarioService {
 
 
 
-    public Usuario  cadastroUsuario(@Valid DTOCriarContaRequest request){
+    public Usuario  cadastroUsuario(DTOCriarContaRequest request){
 
         if (usuarioRepository.findByEmail(request.getEmail()).isPresent()){
             throw new RuntimeException("Email ja cadastrado");
@@ -109,7 +109,7 @@ public class UsuarioService {
         return usuario;
     }
 
-    public Usuario alterarDados(@Valid DTOAtualizarDadosRequest dados, Usuario usuario){
+    public Usuario alterarDados( DTOAtualizarDadosRequest dados, Usuario usuario){
 
         if(dados.getUsuario() != null){
             usuario.setUsuario(dados.getUsuario());
@@ -125,11 +125,11 @@ public class UsuarioService {
             usuario.setSenhaHash(senhaEncoded);
         }
 
-        return usuario;
+        return usuarioRepository.save(usuario);
     }
 
 
-    public CarroUsuario alterarCarro(@Valid DTOTrocarCarroRequest dados, Usuario usuario) {
+    public CarroUsuario alterarCarro( DTOTrocarCarroRequest dados, Usuario usuario) {
         CarroUsuario carro = usuario.getCarroUsuario();
 
         carro.setPlaca(dados.getPlaca());

@@ -27,7 +27,7 @@ public class AuthController {
     }
 
     @PostMapping("/cadastro")
-    public Usuario cadastroUsuario(@RequestBody DTOCriarContaRequest request){
+    public Usuario cadastroUsuario(@RequestBody @Valid DTOCriarContaRequest request){
 
         return usuarioService.cadastroUsuario(request);
     }

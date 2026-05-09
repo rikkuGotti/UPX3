@@ -1,5 +1,6 @@
 package br.com.ABICAP.pontorecarga_api.repository;
 
+import br.com.ABICAP.pontorecarga_api.model.PontoRecarga;
 import br.com.ABICAP.pontorecarga_api.model.Reserva;
 import br.com.ABICAP.pontorecarga_api.model.StatusReserva;
 import br.com.ABICAP.pontorecarga_api.model.Usuario;
@@ -14,6 +15,8 @@ import java.util.List;
 public interface ReservaRepository extends JpaRepository<Reserva, Integer> {
 
     List<Reserva> findByUsuario(Usuario usuario);
+
+    List<Reserva> findByUsuarioAndPontoRecargaAndStatusReserva(Usuario usuario, PontoRecarga pontoRecarga, StatusReserva statusReserva);
 
 
     @Query("SELECT r FROM Reserva r WHERE r.statusReserva = 'EM_ANDAMENTO' AND r.fim < CURRENT_TIMESTAMP")

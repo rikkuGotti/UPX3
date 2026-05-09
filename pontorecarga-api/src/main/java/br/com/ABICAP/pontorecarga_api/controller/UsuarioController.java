@@ -8,6 +8,7 @@ import br.com.ABICAP.pontorecarga_api.model.Usuario;
 import br.com.ABICAP.pontorecarga_api.repository.UsuarioRepository;
 import br.com.ABICAP.pontorecarga_api.service.UsuarioService;
 import jakarta.servlet.http.HttpSession;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,7 +30,7 @@ public class UsuarioController {
     }
 
     @PatchMapping("/meu-perfil/alterar-dados")
-    public ResponseEntity<?> alterarDados(@RequestBody DTOAtualizarDadosRequest dados, HttpSession session){
+    public ResponseEntity<?> alterarDados(@RequestBody @Valid DTOAtualizarDadosRequest dados, HttpSession session){
         Usuario usuario = usuarioService.validarUsuario(session);
 
         usuarioService.alterarDados(dados, usuario);
@@ -38,7 +39,7 @@ public class UsuarioController {
     }
 
     @PutMapping("/meu-perfil/alterar-dados-carro")
-    public ResponseEntity<?> alterarCarro(@RequestBody DTOTrocarCarroRequest dados, HttpSession session){
+    public ResponseEntity<?> alterarCarro(@RequestBody @Valid DTOTrocarCarroRequest dados, HttpSession session){
         Usuario usuario = usuarioService.validarUsuario(session);
 
         usuarioService.alterarCarro(dados, usuario);

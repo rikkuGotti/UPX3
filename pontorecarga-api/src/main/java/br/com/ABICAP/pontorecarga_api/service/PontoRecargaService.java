@@ -24,7 +24,7 @@ public class PontoRecargaService {
         this.pontoRecargaRepository = pontoRecargaRepository;
     }
 
-    public PontoRecarga cadastrarPontoRecarga(@Valid DTOPontoRecargaRequest request){
+    public PontoRecarga cadastrarPontoRecarga(DTOPontoRecargaRequest request){
 
         if (pontoRecargaRepository.existsByCodigoPatrimonio(request.getCodigoPatrimonio())) {
             throw new RuntimeException("Já existe um ponto com código: " + request.getCodigoPatrimonio());

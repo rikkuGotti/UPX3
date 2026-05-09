@@ -10,6 +10,7 @@ import br.com.ABICAP.pontorecarga_api.service.PontoRecargaService;
 import br.com.ABICAP.pontorecarga_api.service.ReservaService;
 import br.com.ABICAP.pontorecarga_api.service.UsuarioService;
 import jakarta.servlet.http.HttpSession;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -38,7 +39,7 @@ public class ReservaController {
     }
 
     @PostMapping("criarreserva")
-    public ResponseEntity<?> criarReserva(@RequestBody DTOReservaRequest request, HttpSession session){
+    public ResponseEntity<?> criarReserva(@RequestBody @Valid DTOReservaRequest request, HttpSession session){
 
         Usuario usuario = usuarioService.validarUsuario(session);
 

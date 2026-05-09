@@ -134,7 +134,7 @@ public class ReservaService {
         }
     }
 
-    public Reserva criarReserva(@Valid DTOReservaRequest request, Usuario usuario) {
+    public Reserva criarReserva(DTOReservaRequest request, Usuario usuario) {
 
         PontoRecarga pontoRecarga = pontoRecargaRepository.findById(request.getPontoRecargaId())
                 .orElseThrow(() -> new RuntimeException("Ponto nao encontrado"));
