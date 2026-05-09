@@ -1,9 +1,6 @@
 package br.com.ABICAP.pontorecarga_api.controller;
 
-import br.com.ABICAP.pontorecarga_api.dto.DTOAtualizarDadosRequest;
-import br.com.ABICAP.pontorecarga_api.dto.DTOCarroUsuarioResponse;
-import br.com.ABICAP.pontorecarga_api.dto.DTOTrocarCarroRequest;
-import br.com.ABICAP.pontorecarga_api.dto.DTOUsuarioResponse;
+import br.com.ABICAP.pontorecarga_api.dto.*;
 import br.com.ABICAP.pontorecarga_api.model.Usuario;
 import br.com.ABICAP.pontorecarga_api.repository.UsuarioRepository;
 import br.com.ABICAP.pontorecarga_api.service.UsuarioService;
@@ -71,4 +68,19 @@ public class UsuarioController {
 
         return ResponseEntity.ok(respostaUsuario);
     }
+
+    @GetMapping("/me")
+    public ResponseEntity<?> roleUsuario(HttpSession session){
+        Usuario usuario = usuarioService.validarUsuario(session);
+
+        DTORoleFrontResponse response = new DTORoleFrontResponse();
+        response.setId(usuario.getId());
+        response.setUsername(usuario.getUsuario());
+        response.setEmail(usuario.getEmail());
+        response.setRole(usuario.getTipoUsuario().toString());
+
+        return ResponseEntity.ok(response);
+    }
+
+
 }

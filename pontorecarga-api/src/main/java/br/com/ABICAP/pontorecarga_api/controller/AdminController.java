@@ -73,17 +73,17 @@ public class AdminController {
         return ResponseEntity.status(201).body(responses);
     }
 
-    @GetMapping("/relatorio/consumo-por-morador/{usuarioId}")
-    public ResponseEntity<?> relatorioConsumoMorador(@PathVariable Integer usuarioID,
-                                                     @RequestParam LocalDate inicio,
-                                                     @RequestParam LocalDate fim,
-                                                     HttpSession session){
-        adminService.validarAdmin(session);
-
-        List<DTORelatorioConsumoResponse> responses = adminService.gerarRelatorioConsumoMorador(inicio, fim, usuarioID);
-
-        return ResponseEntity.status(201).body(responses);
-    }
+//    @GetMapping("/relatorio/consumo-por-morador/{usuarioId}")
+//    public ResponseEntity<?> relatorioConsumoMorador(@PathVariable Integer usuarioID,
+//                                                     @RequestParam LocalDate inicio,
+//                                                     @RequestParam LocalDate fim,
+//                                                     HttpSession session){
+//        adminService.validarAdmin(session);
+//
+//        adminService.gerarRelatorioConsumoMorador(inicio, fim, usuarioID);
+//
+//        return ResponseEntity.status(201).body(responses);
+//    }
 
 
 
