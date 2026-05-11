@@ -1,7 +1,10 @@
 package br.com.ABICAP.pontorecarga_api.service;
 
 import br.com.ABICAP.pontorecarga_api.dto.DTORelatorioConsumoResponse;
+import br.com.ABICAP.pontorecarga_api.dto.DTORelatorioListaCarrosResponse;
+import br.com.ABICAP.pontorecarga_api.dto.DTOReservaResponse;
 import br.com.ABICAP.pontorecarga_api.model.*;
+import br.com.ABICAP.pontorecarga_api.repository.CarroRepository;
 import br.com.ABICAP.pontorecarga_api.repository.PontoRecargaRepository;
 import br.com.ABICAP.pontorecarga_api.repository.ReservaRepository;
 import br.com.ABICAP.pontorecarga_api.repository.UsuarioRepository;
@@ -25,11 +28,14 @@ public class AdminService {
 
     private ReservaRepository reservaRepository;
 
+    private CarroRepository carroRepository;
+
     @Autowired
-    public AdminService(UsuarioRepository usuarioRepository, PontoRecargaRepository pontoRecargaRepository, ReservaRepository reservaRepository) {
+    public AdminService(UsuarioRepository usuarioRepository, PontoRecargaRepository pontoRecargaRepository, ReservaRepository reservaRepository, CarroRepository carroRepository) {
         this.usuarioRepository = usuarioRepository;
         this.pontoRecargaRepository = pontoRecargaRepository;
         this.reservaRepository = reservaRepository;
+        this.carroRepository = carroRepository;
     }
 
 
@@ -88,4 +94,118 @@ public class AdminService {
 
         return responses;
     }
+
+
+    public List<DTORelatorioConsumoResponse> gerarRelatorioConsumo(LocalDate inicio, LocalDate fim, Integer usuarioID) {
+
+        LocalDateTime ini = LocalDateTime.of(inicio, LocalTime.of(0, 0, 0));
+        LocalDateTime fi = LocalDateTime.of(fim, LocalTime.of(23, 59, 59));
+
+        Usuario usuario = usuarioRepository.findById(usuarioID)
+                .orElseThrow(() -> new RuntimeException("Usuario nao encontrado"));
+
+        List<DTORelatorioConsumoResponse> responses = new ArrayList<>();
+        List<PontoRecarga> pontos = pontoRecargaRepository.findAll();
+
+        for (PontoRecarga pontoAtual : pontos) {
+
+            List<Reserva> reservas = reservaRepository.findByUsuarioAndPontoRecargaAndStatusReserva(
+                    usuario, pontoAtual, StatusReserva.FINALIZADA);
+
+            if (!reservas.isEmpty()) {
+                DTORelatorioConsumoResponse response = new DTORelatorioConsumoResponse();
+                response.setUsuario(usuario.getUsuario());
+                response.setNomePonto(pontoAtual.getLocalizacao());
+
+                int minutosTotais = 0;
+                for (Reserva r : reservas) {
+                    minutosTotais += r.getDuracaoMinutos();
+                }
+
+                double horasTotais = minutosTotais / 60.0;
+                double consumoTotal = horasTotais * pontoAtual.getPotenciaMaximaKW().doubleValue();
+
+                response.setConsumoTotal(BigDecimal.valueOf(consumoTotal));
+                response.setUsos(reservas.size());
+
+                responses.add(response);
+            }
+        }
+
+        return responses;
+    }
+
+    public List<DTORelatorioListaCarrosResponse> encontrarCarros(String marca) {
+
+        Marcas marcaEnum = Marcas.valueOf(marca.toUpperCase());
+
+        List<CarroUsuario> carros = carroRepository.findByMarca(marcaEnum);
+        List<DTORelatorioListaCarrosResponse> responses = new ArrayList<>();
+
+        for(CarroUsuario carro : carros){
+            DTORelatorioListaCarrosResponse response = new DTORelatorioListaCarrosResponse();
+            response.setUsuario(carro.getUsuario().getUsuario());
+            response.setMarca(marca);
+            response.setPlaca(carro.getPlaca());
+            response.setModelo(carro.getModel());
+            response.setCapacidadeBateria(carro.getCapacidadeBateria());
+            response.setTipoConector(carro.getTipoConector());
+            response.setTipoCarga(carro.getTipoCarga());
+
+            responses.add(response);
+        }
+
+        return responses;
+    }
+
+    public List<DTOReservaResponse> listarReservas(LocalDate inicio, LocalDate fim){
+        LocalDateTime ini = LocalDateTime.of(inicio, LocalTime.of(0, 0, 0));
+        LocalDateTime fi = LocalDateTime.of(fim, LocalTime.of(23, 59, 59));
+
+        List<DTOReservaResponse> responses = new ArrayList<>();
+        List<Reserva> reservas = reservaRepository.findByInicioBetween(ini, fi);
+
+        for(Reserva r : reservas){
+            DTOReservaResponse response = new DTOReservaResponse();
+
+            response.setUsuarioNome(r.getUsuario().getUsuario());
+            response.setId(r.getId());
+            response.setPontoRecargaId(r.getPontoRecarga().getId());
+            response.setPontoLocalizacao(r.getPontoRecarga().getLocalizacao());
+            response.setHoraInicio(r.getInicio());
+            response.setHoraFim(r.getFim());
+            response.setDuracaoMinutos(r.getDuracaoMinutos());
+            response.setStatus(r.getStatusReserva().toString());
+
+            responses.add(response);
+        }
+
+        return responses;
+    }
+
+    public List<DTOReservaResponse> listarReservas(LocalDate inicio, LocalDate fim, Integer id){
+        LocalDateTime ini = LocalDateTime.of(inicio, LocalTime.of(0, 0, 0));
+        LocalDateTime fi = LocalDateTime.of(fim, LocalTime.of(23, 59, 59));
+
+        List<DTOReservaResponse> responses = new ArrayList<>();
+        List<Reserva> reservas = reservaRepository.findByInicioBetweenAndPontoRecargaId(ini, fi, id);
+
+        for(Reserva r : reservas){
+            DTOReservaResponse response = new DTOReservaResponse();
+
+            response.setUsuarioNome(r.getUsuario().getUsuario());
+            response.setId(r.getId());
+            response.setPontoRecargaId(r.getPontoRecarga().getId());
+            response.setPontoLocalizacao(r.getPontoRecarga().getLocalizacao());
+            response.setHoraInicio(r.getInicio());
+            response.setHoraFim(r.getFim());
+            response.setDuracaoMinutos(r.getDuracaoMinutos());
+            response.setStatus(r.getStatusReserva().toString());
+
+            responses.add(response);
+        }
+
+        return responses;
+    }
 }
+

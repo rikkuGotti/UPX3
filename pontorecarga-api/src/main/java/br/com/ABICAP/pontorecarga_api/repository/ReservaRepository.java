@@ -50,4 +50,20 @@ public interface ReservaRepository extends JpaRepository<Reserva, Integer> {
     @Query("SELECT r FROM Reserva r WHERE r.pontoRecarga.id = :pontoId AND CAST(r.inicio AS date) = :data")
     List<Reserva> findByPontoRecargaIdAndData(@Param("pontoId") Integer pontoId,
                                               @Param("data") LocalDate data);
+
+    @Query("SELECT r FROM Reserva r WHERE r.usuario.id = :usuarioID AND " +
+            "r.statusReserva = :status AND r.inicio >= :inicio AND r.fim <= :fim")
+    List<Reserva> reservasPorUsuario(@Param("usuario") Integer usuario,
+                                     @Param("status") StatusReserva statusReserva,
+                                     @Param("inicio") LocalDateTime inicio,
+                                     @Param("fim") LocalDateTime fim);
+
+    boolean existsByUsuarioAndPontoRecargaAndStatusReserva(Usuario usuario, PontoRecarga pontoAtual, StatusReserva statusReserva);
+
+    Integer countByInicioBetween(LocalDateTime inicio, LocalDateTime fim);
+
+    List<Reserva> findByInicioBetween(LocalDateTime inicio, LocalDateTime fim);
+
+    List<Reserva> findByInicioBetweenAndPontoRecargaId(LocalDateTime inicio, LocalDateTime fim, Integer id);
 }
+

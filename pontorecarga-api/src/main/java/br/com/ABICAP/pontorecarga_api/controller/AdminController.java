@@ -2,9 +2,10 @@ package br.com.ABICAP.pontorecarga_api.controller;
 
 import br.com.ABICAP.pontorecarga_api.dto.DTOPontoRecargaRequest;
 import br.com.ABICAP.pontorecarga_api.dto.DTORelatorioConsumoResponse;
-import br.com.ABICAP.pontorecarga_api.model.PontoRecarga;
-import br.com.ABICAP.pontorecarga_api.model.TipoUsuario;
-import br.com.ABICAP.pontorecarga_api.model.Usuario;
+import br.com.ABICAP.pontorecarga_api.dto.DTORelatorioListaCarrosResponse;
+import br.com.ABICAP.pontorecarga_api.dto.DTOReservaResponse;
+import br.com.ABICAP.pontorecarga_api.model.*;
+import br.com.ABICAP.pontorecarga_api.repository.ReservaRepository;
 import br.com.ABICAP.pontorecarga_api.repository.UsuarioRepository;
 import br.com.ABICAP.pontorecarga_api.service.AdminService;
 import br.com.ABICAP.pontorecarga_api.service.PontoRecargaService;
@@ -17,6 +18,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -29,11 +32,14 @@ public class AdminController {
 
     private PontoRecargaService pontoRecargaService;
 
+    private ReservaRepository reservaRepository;
+
     @Autowired
-    public AdminController(UsuarioRepository usuarioRepository, AdminService adminService, PontoRecargaService pontoRecargaService) {
+    public AdminController(UsuarioRepository usuarioRepository, AdminService adminService, PontoRecargaService pontoRecargaService, ReservaRepository reservaRepository) {
         this.usuarioRepository = usuarioRepository;
         this.adminService = adminService;
         this.pontoRecargaService = pontoRecargaService;
+        this.reservaRepository = reservaRepository;
     }
 
     @GetMapping("/teste")
@@ -59,7 +65,7 @@ public class AdminController {
         PontoRecarga ponto = pontoRecargaService.cadastrarPontoRecarga(request);
 
 
-        return ResponseEntity.status(201).body(ponto);
+        return ResponseEntity.status(200).body(ponto);
     }
 
     @GetMapping("/relatorio/consumo-moradores")
@@ -70,20 +76,70 @@ public class AdminController {
 
         List<DTORelatorioConsumoResponse> responses = adminService.gerarRelatorioConsumo(inicio, fim);
 
-        return ResponseEntity.status(201).body(responses);
+        return ResponseEntity.status(200).body(responses);
     }
 
-//    @GetMapping("/relatorio/consumo-por-morador/{usuarioId}")
-//    public ResponseEntity<?> relatorioConsumoMorador(@PathVariable Integer usuarioID,
-//                                                     @RequestParam LocalDate inicio,
-//                                                     @RequestParam LocalDate fim,
-//                                                     HttpSession session){
-//        adminService.validarAdmin(session);
-//
-//        adminService.gerarRelatorioConsumoMorador(inicio, fim, usuarioID);
-//
-//        return ResponseEntity.status(201).body(responses);
-//    }
+
+
+
+    @GetMapping("/relatorio/consumo-por-morador/{usuarioID}")
+    public ResponseEntity<?> relatorioConsumoMorador(@PathVariable Integer usuarioID,
+                                                     @RequestParam LocalDate inicio,
+                                                     @RequestParam LocalDate fim,
+                                                     HttpSession session){
+        adminService.validarAdmin(session);
+
+        List<DTORelatorioConsumoResponse> responses = adminService.gerarRelatorioConsumo(inicio, fim, usuarioID);
+
+        return ResponseEntity.status(200).body(responses);
+    }
+
+    @GetMapping("/relatorio/carros-por-marca/{marca}")
+    public ResponseEntity<?> relatorioCarrosPorMarca(@PathVariable String marca, HttpSession session){
+        adminService.validarAdmin(session);
+
+        List<DTORelatorioListaCarrosResponse> responses =  adminService.encontrarCarros(marca);
+
+        return ResponseEntity.status(200).body(responses);
+    }
+
+    @GetMapping("/relatorio/total-reservas")
+    public ResponseEntity<?> totalReservas(@RequestParam LocalDate inicio, @RequestParam LocalDate fim, HttpSession session){
+        adminService.validarAdmin(session);
+
+        LocalDateTime ini = LocalDateTime.of(inicio, LocalTime.of(0, 0, 0));
+        LocalDateTime fi = LocalDateTime.of(fim, LocalTime.of(23, 59, 59));
+
+        Integer totalReservas = reservaRepository.countByInicioBetween(ini, fi);
+
+        return ResponseEntity.status(200).body(totalReservas);
+    }
+
+    @GetMapping("/relatorio/reservas")
+    public ResponseEntity<?> reservas(@RequestParam LocalDate inicio, @RequestParam LocalDate fim, HttpSession session){
+        adminService.validarAdmin(session);
+
+        List<DTOReservaResponse> responses = adminService.listarReservas(inicio, fim);
+
+        return ResponseEntity.status(200).body(responses);
+    }
+
+    @GetMapping("/relatorio/reservas/{id}")
+    public ResponseEntity<?> reservasPorPonto(@PathVariable Integer id, @RequestParam LocalDate inicio, @RequestParam LocalDate fim, HttpSession session){
+        adminService.validarAdmin(session);
+
+        List<DTOReservaResponse> responses = adminService.listarReservas(inicio, fim, id);
+
+        return ResponseEntity.status(200).body(responses);
+    }
+
+
+
+
+
+
+
+
 
 
 

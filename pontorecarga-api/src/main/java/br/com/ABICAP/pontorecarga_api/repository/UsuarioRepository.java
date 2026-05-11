@@ -1,6 +1,7 @@
 package br.com.ABICAP.pontorecarga_api.repository;
 
 import br.com.ABICAP.pontorecarga_api.model.PontoRecarga;
+import br.com.ABICAP.pontorecarga_api.model.Reserva;
 import br.com.ABICAP.pontorecarga_api.model.StatusReserva;
 import br.com.ABICAP.pontorecarga_api.model.Usuario;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -25,6 +26,9 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Integer> {
                                                  @Param("inicio") LocalDateTime inicio,
                                                  @Param("fim")LocalDateTime fim,
                                                  @Param("ponto")PontoRecarga ponto);
+
+
+
 
 
 
