@@ -11,7 +11,7 @@ public class ReservaJob {
     @Autowired
     private ReservaService reservaService;
 
-    @Scheduled(fixedDelay = 300000)
+    @Scheduled(fixedDelay = 86400000)
     public void checarReservasExpiradas(){
         reservaService.finalizarReservasExpiradas();
     }
