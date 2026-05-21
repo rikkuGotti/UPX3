@@ -10,6 +10,7 @@ import br.com.ABICAP.pontorecarga_api.repository.ReservaRepository;
 import br.com.ABICAP.pontorecarga_api.repository.UsuarioRepository;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -96,7 +97,7 @@ public class AdminService {
     }
 
 
-    public List<DTORelatorioConsumoResponse> gerarRelatorioConsumo(LocalDate inicio, LocalDate fim, Integer usuarioID) {
+public List<DTORelatorioConsumoResponse> gerarRelatorioConsumo(LocalDate inicio, LocalDate fim, Integer usuarioID) {
 
         LocalDateTime ini = LocalDateTime.of(inicio, LocalTime.of(0, 0, 0));
         LocalDateTime fi = LocalDateTime.of(fim, LocalTime.of(23, 59, 59));
@@ -206,6 +207,60 @@ public class AdminService {
         }
 
         return responses;
+    }
+
+
+    public List<DTOReservaResponse> reservasCanceladas(LocalDate inicio, LocalDate fim) {
+        LocalDateTime ini = LocalDateTime.of(inicio, LocalTime.of(0, 0, 0));
+        LocalDateTime fi = LocalDateTime.of(fim, LocalTime.of(23, 59, 59));
+
+        List<DTOReservaResponse> responses = new ArrayList<>();
+        List<Reserva> reservas = reservaRepository.findByInicioBetweenAndStatusReserva(ini, fi, StatusReserva.CANCELADA);
+
+        for(Reserva r : reservas){
+            DTOReservaResponse response = new DTOReservaResponse();
+
+            response.setUsuarioNome(r.getUsuario().getUsuario());
+            response.setId(r.getId());
+            response.setPontoRecargaId(r.getPontoRecarga().getId());
+            response.setPontoLocalizacao(r.getPontoRecarga().getLocalizacao());
+            response.setHoraInicio(r.getInicio());
+            response.setHoraFim(r.getFim());
+            response.setDuracaoMinutos(r.getDuracaoMinutos());
+            response.setStatus(r.getStatusReserva().toString());
+
+            responses.add(response);
+        }
+
+
+        return  responses;
+    }
+
+    public List<DTOReservaResponse> reservasCanceladasUsuario(LocalDate inicio, LocalDate fim, Integer id) {
+        LocalDateTime ini = LocalDateTime.of(inicio, LocalTime.of(0, 0, 0));
+        LocalDateTime fi = LocalDateTime.of(fim, LocalTime.of(23, 59, 59));
+
+        List<DTOReservaResponse> responses = new ArrayList<>();
+        Usuario usuario = usuarioRepository.findById(id).orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+        List<Reserva> reservas = reservaRepository.findByInicioBetweenAndStatusReservaAndUsuario(ini, fi, StatusReserva.CANCELADA, usuario );
+
+        for(Reserva r : reservas){
+            DTOReservaResponse response = new DTOReservaResponse();
+
+            response.setUsuarioNome(r.getUsuario().getUsuario());
+            response.setId(r.getId());
+            response.setPontoRecargaId(r.getPontoRecarga().getId());
+            response.setPontoLocalizacao(r.getPontoRecarga().getLocalizacao());
+            response.setHoraInicio(r.getInicio());
+            response.setHoraFim(r.getFim());
+            response.setDuracaoMinutos(r.getDuracaoMinutos());
+            response.setStatus(r.getStatusReserva().toString());
+
+            responses.add(response);
+        }
+
+
+        return  responses;
     }
 }
 

@@ -5,6 +5,7 @@ import br.com.ABICAP.pontorecarga_api.dto.DTORelatorioConsumoResponse;
 import br.com.ABICAP.pontorecarga_api.dto.DTORelatorioListaCarrosResponse;
 import br.com.ABICAP.pontorecarga_api.dto.DTOReservaResponse;
 import br.com.ABICAP.pontorecarga_api.model.*;
+import br.com.ABICAP.pontorecarga_api.repository.PontoRecargaRepository;
 import br.com.ABICAP.pontorecarga_api.repository.ReservaRepository;
 import br.com.ABICAP.pontorecarga_api.repository.UsuarioRepository;
 import br.com.ABICAP.pontorecarga_api.service.AdminService;
@@ -34,12 +35,15 @@ public class AdminController {
 
     private ReservaRepository reservaRepository;
 
+    PontoRecargaRepository pontoRecargaRepository;
+
     @Autowired
-    public AdminController(UsuarioRepository usuarioRepository, AdminService adminService, PontoRecargaService pontoRecargaService, ReservaRepository reservaRepository) {
+    public AdminController(UsuarioRepository usuarioRepository, AdminService adminService, PontoRecargaService pontoRecargaService, ReservaRepository reservaRepository, PontoRecargaRepository pontoRecargaRepository) {
         this.usuarioRepository = usuarioRepository;
         this.adminService = adminService;
         this.pontoRecargaService = pontoRecargaService;
         this.reservaRepository = reservaRepository;
+        this.pontoRecargaRepository = pontoRecargaRepository;
     }
 
     @GetMapping("/teste")
@@ -128,10 +132,41 @@ public class AdminController {
     public ResponseEntity<?> reservasPorPonto(@PathVariable Integer id, @RequestParam LocalDate inicio, @RequestParam LocalDate fim, HttpSession session){
         adminService.validarAdmin(session);
 
+        if(!pontoRecargaRepository.existsById(id)){
+            return ResponseEntity.status(404).body("Ponto nao encontrado");
+        }
+
         List<DTOReservaResponse> responses = adminService.listarReservas(inicio, fim, id);
 
         return ResponseEntity.status(200).body(responses);
     }
+
+    @GetMapping("/relatorio/reservas/canceladas")
+    public ResponseEntity<?> reservasCanceladasPorTempo(@RequestParam LocalDate inicio, @RequestParam LocalDate fim, HttpSession session){
+        adminService.validarAdmin(session);
+
+        List<DTOReservaResponse> responses = adminService.reservasCanceladas(inicio, fim);
+
+        if(responses.isEmpty()){
+            return ResponseEntity.status(404).body("Reservas canceladas nao encontradas");
+        }
+
+        return ResponseEntity.status(200).body(responses);
+    }
+
+    @GetMapping("/relatorio/reservas/canceladasUsuario")
+    public ResponseEntity<?> reservasCanceladasPorUsuario(@RequestParam Integer id ,@RequestParam LocalDate inicio, @RequestParam LocalDate fim, HttpSession session){
+        adminService.validarAdmin(session);
+
+        List<DTOReservaResponse> responses = adminService.reservasCanceladasUsuario(inicio, fim, id);
+
+        if(responses.isEmpty()){
+            return ResponseEntity.status(404).body("Reservas canceladas nao encontradas");
+        }
+
+        return ResponseEntity.status(200).body(responses);
+    }
+
 
 
 

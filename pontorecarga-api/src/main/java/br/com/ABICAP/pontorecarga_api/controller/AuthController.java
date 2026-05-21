@@ -27,9 +27,16 @@ public class AuthController {
     }
 
     @PostMapping("/cadastro")
-    public Usuario cadastroUsuario(@RequestBody @Valid DTOCriarContaRequest request){
+    public ResponseEntity<?> cadastroUsuario(@RequestBody @Valid DTOCriarContaRequest request, HttpSession session){
 
-        return usuarioService.cadastroUsuario(request);
+        Usuario usuario = usuarioService.cadastroUsuario(request);
+
+        String user = request.getUsuario();
+
+        session.setAttribute("USUARIO_LOGADO", user);
+
+
+        return ResponseEntity.status(201).body("Conta criada com sucesso");
     }
 
     @PostMapping("/login")
@@ -45,6 +52,12 @@ public class AuthController {
             return ResponseEntity.ok("Login realizado");
         }
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Erro, algo esta invalido");
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<String> logout(HttpSession session) {
+        session.invalidate();
+        return ResponseEntity.ok("Logout realizado com sucesso");
     }
 
 

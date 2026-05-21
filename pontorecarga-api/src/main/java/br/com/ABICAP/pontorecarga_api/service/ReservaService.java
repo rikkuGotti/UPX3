@@ -38,7 +38,7 @@ public class ReservaService {
         this.pontoRecargaRepository = pontoRecargaRepository;
     }
 
-    public boolean verificarDisponibilidade(LocalDateTime inicio, LocalDateTime fim) {
+    private boolean verificarDisponibilidade(LocalDateTime inicio, LocalDateTime fim) {
         List<Reserva> reservas = reservaRepository.findAll();
 
         for (Reserva i : reservas) {
@@ -54,7 +54,7 @@ public class ReservaService {
         return true;
     }
 
-    public void validarRegraHorario(Reserva reserva) {
+    private void validarRegraHorario(Reserva reserva) {
         LocalDateTime inicio = reserva.getInicio();
         Integer minutos = reserva.getDuracaoMinutos();
 
@@ -75,7 +75,7 @@ public class ReservaService {
         }
     }
 
-    public void verificarLimites(Usuario usuario, Integer minutos, LocalDate dataNovaReserva) {
+    private void verificarLimites(Usuario usuario, Integer minutos, LocalDate dataNovaReserva) {
 
         LocalDate hoje = LocalDate.now();
         LocalDate dataMaxima = hoje.plusDays(1);
