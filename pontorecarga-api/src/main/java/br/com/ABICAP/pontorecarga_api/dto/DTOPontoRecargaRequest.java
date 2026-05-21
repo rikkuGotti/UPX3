@@ -37,7 +37,7 @@ public class DTOPontoRecargaRequest {
     @NotBlank(message = "Tipo de conector é obrigatório")
     private String tipoConector;
 
-    @NotBlank(message = "Quantidade de conectores é obrigatório")
+    @NotNull(message = "Quantidade de conectores é obrigatório")
     private Integer quantidadeConectores;
 
     // COMUNICAÇÃO
