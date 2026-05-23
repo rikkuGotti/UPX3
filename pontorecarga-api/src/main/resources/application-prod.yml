@@ -18,6 +18,7 @@ server:
   error:
     include-message: always
     include-binding-errors: always
+    include-stacktrace: never
   servlet:
     session:
       timeout: 10080m
