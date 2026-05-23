@@ -4,6 +4,9 @@ import br.com.ABICAP.pontorecarga_api.dto.DTOAtualizarDadosRequest;
 import br.com.ABICAP.pontorecarga_api.dto.DTOCriarCarroRequest;
 import br.com.ABICAP.pontorecarga_api.dto.DTOCriarContaRequest;
 import br.com.ABICAP.pontorecarga_api.dto.DTOTrocarCarroRequest;
+import br.com.ABICAP.pontorecarga_api.exception.DadoJaCadastradoException;
+import br.com.ABICAP.pontorecarga_api.exception.UsuarioNaoAutenticadoException;
+import br.com.ABICAP.pontorecarga_api.exception.UsuarioNaoEncontradoException;
 import br.com.ABICAP.pontorecarga_api.model.*;
 import br.com.ABICAP.pontorecarga_api.repository.CarroRepository;
 import br.com.ABICAP.pontorecarga_api.repository.UsuarioRepository;
@@ -38,17 +41,17 @@ public class UsuarioService {
     public Usuario  cadastroUsuario(DTOCriarContaRequest request){
 
         if (usuarioRepository.findByEmail(request.getEmail()).isPresent()){
-            throw new RuntimeException("Email ja cadastrado");
+            throw new DadoJaCadastradoException("Email ja cadastrado");
         }
         if(request.getSenhaHash().equalsIgnoreCase(request.getUsuario())){
-            throw new RuntimeException("Senha nao pode ser igual ao usuario");
+            throw new DadoJaCadastradoException("Senha nao pode ser igual ao usuario");
         }
 
         DTOCriarCarroRequest carro = request.getCarroUsuario();
 
 
         if(carroRepository.findByPlaca(carro.getPlaca()).isPresent()){
-            throw new RuntimeException("Um carro com essa placa ja foi cadastrado, cheque as informações" +
+            throw new DadoJaCadastradoException("Um carro com essa placa ja foi cadastrado, cheque as informações" +
                                        " e tente novamente");
         }
 
@@ -91,7 +94,7 @@ public class UsuarioService {
                 })
                 .orElseThrow(() -> {
                     System.out.println("Usuário NÃO encontrado: " + usuario);
-                    return new RuntimeException("Usuário não encontrado");
+                    return new UsuarioNaoEncontradoException("Usuário não encontrado");
                 });
     }
 
@@ -99,17 +102,17 @@ public class UsuarioService {
         String usuarioLogado = (String) session.getAttribute("USUARIO_LOGADO");
 
         if (usuarioLogado == null) {
-            throw new RuntimeException("Usuário não está logado");
+            throw new UsuarioNaoAutenticadoException("Usuário não está logado");
         }
 
         Usuario usuario = usuarioRepository.findByUsuario(usuarioLogado)
-                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+                .orElseThrow(() -> new UsuarioNaoEncontradoException("Usuário não encontrado"));
 
 
         return usuario;
     }
 
-    public Usuario alterarDados( DTOAtualizarDadosRequest dados, Usuario usuario){
+    public Usuario alterarDados(DTOAtualizarDadosRequest dados, Usuario usuario){
 
         if(dados.getUsuario() != null){
             usuario.setUsuario(dados.getUsuario());

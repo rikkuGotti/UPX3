@@ -1,6 +1,7 @@
 package br.com.ABICAP.pontorecarga_api.service;
 
 import br.com.ABICAP.pontorecarga_api.dto.DTOPontoRecargaRequest;
+import br.com.ABICAP.pontorecarga_api.exception.CodigoPontoJaExisteException;
 import br.com.ABICAP.pontorecarga_api.model.PontoRecarga;
 import br.com.ABICAP.pontorecarga_api.model.StatusPonto;
 import br.com.ABICAP.pontorecarga_api.model.TipoCarga;
@@ -27,7 +28,7 @@ public class PontoRecargaService {
     public PontoRecarga cadastrarPontoRecarga(DTOPontoRecargaRequest request){
 
         if (pontoRecargaRepository.existsByCodigoPatrimonio(request.getCodigoPatrimonio())) {
-            throw new RuntimeException("Já existe um ponto com código: " + request.getCodigoPatrimonio());
+            throw new CodigoPontoJaExisteException("Já existe um ponto com código: " + request.getCodigoPatrimonio());
         }
 
         PontoRecarga pontoRecarga = new PontoRecarga();

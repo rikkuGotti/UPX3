@@ -32,7 +32,7 @@ public class UsuarioController {
 
         usuarioService.alterarDados(dados, usuario);
 
-        return ResponseEntity.status(201).body("Alteracao feita com sucesso");
+        return ResponseEntity.status(200).body("Alteracao feita com sucesso");
     }
 
     @PutMapping("/meu-perfil/alterar-dados-carro")
@@ -41,7 +41,7 @@ public class UsuarioController {
 
         usuarioService.alterarCarro(dados, usuario);
 
-        return ResponseEntity.status(201).body("Carro atualizado com sucesso");
+        return ResponseEntity.status(200).body("Carro atualizado com sucesso");
     }
 
     @GetMapping("/meu-perfil")

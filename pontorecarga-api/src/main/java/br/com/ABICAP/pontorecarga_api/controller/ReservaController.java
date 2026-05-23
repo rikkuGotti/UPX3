@@ -55,7 +55,7 @@ public class ReservaController {
 
         List<DTOReservaResponse> responses = reservaService.listarReservas(usuario);
 
-        return ResponseEntity.status(201).body(responses);
+        return ResponseEntity.status(200).body(responses);
     }
 
     @PutMapping("/meus/{id}/iniciar")

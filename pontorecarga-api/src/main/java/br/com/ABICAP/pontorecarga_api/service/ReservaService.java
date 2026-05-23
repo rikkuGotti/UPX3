@@ -2,6 +2,7 @@ package br.com.ABICAP.pontorecarga_api.service;
 
 import br.com.ABICAP.pontorecarga_api.dto.DTOReservaRequest;
 import br.com.ABICAP.pontorecarga_api.dto.DTOReservaResponse;
+import br.com.ABICAP.pontorecarga_api.exception.*;
 import br.com.ABICAP.pontorecarga_api.model.PontoRecarga;
 import br.com.ABICAP.pontorecarga_api.model.Reserva;
 import br.com.ABICAP.pontorecarga_api.model.StatusReserva;
@@ -10,7 +11,6 @@ import br.com.ABICAP.pontorecarga_api.repository.CarroRepository;
 import br.com.ABICAP.pontorecarga_api.repository.PontoRecargaRepository;
 import br.com.ABICAP.pontorecarga_api.repository.ReservaRepository;
 import br.com.ABICAP.pontorecarga_api.repository.UsuarioRepository;
-import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -59,19 +59,19 @@ public class ReservaService {
         Integer minutos = reserva.getDuracaoMinutos();
 
         if (minutos < 30) {
-            throw new RuntimeException("Tempo minimo da reserva nao foi atingido");
+            throw new RegraReservaException("Tempo minimo da reserva nao foi atingido");
         }
 
         LocalTime horarioInicio = inicio.toLocalTime();
         if (horarioInicio.isBefore(LocalTime.of(21, 0)) &&
                 horarioInicio.isAfter(LocalTime.of(9, 0))) {
             if (minutos > 240) {
-                throw new RuntimeException("Nesse horario nao e permitido uma reserva maior que 4 horas");
+                throw new RegraReservaException("Nesse horario nao e permitido uma reserva maior que 4 horas");
             }
         }
 
         if (minutos > 480) {
-            throw new RuntimeException("Nao e possivel reservar o ponto por mais de 8 horas");
+            throw new RegraReservaException("Nao e possivel reservar o ponto por mais de 8 horas");
         }
     }
 
@@ -81,11 +81,11 @@ public class ReservaService {
         LocalDate dataMaxima = hoje.plusDays(1);
 
         if (dataNovaReserva.isBefore(hoje)) {
-            throw new RuntimeException("Não é permitido reservar em datas passadas");
+            throw new RegraReservaException("Não é permitido reservar em datas passadas");
         }
 
         if (dataNovaReserva.isAfter(dataMaxima)) {
-            throw new RuntimeException("Só é permitido reservar com no máximo 1 dias de antecedência");
+            throw new RegraReservaException("Só é permitido reservar com no máximo 1 dias de antecedência");
         }
 
         int reservasHoje = reservaRepository.countByUsuarioAndDataAndStatusReserva(
@@ -93,7 +93,7 @@ public class ReservaService {
         );
 
         if (reservasHoje >= 2) {
-            throw new RuntimeException("Limite de 2 reservas por dia atingido");
+            throw new RegraReservaException("Limite de 2 reservas por dia atingido");
         }
 
         int reservasAmanha = reservaRepository.countByUsuarioAndDataAndStatusReserva(
@@ -101,7 +101,7 @@ public class ReservaService {
         );
 
         if (dataNovaReserva.isAfter(LocalDate.now()) && reservasAmanha >= 2) {
-            throw new RuntimeException("Limite de 2 reservas para o dia de amanha atingido");
+            throw new RegraReservaException("Limite de 2 reservas para o dia de amanha atingido");
         }
 
         LocalDate inicio = LocalDate.now().minusDays(7);
@@ -112,7 +112,7 @@ public class ReservaService {
         );
 
         if (reservasSemana >= 5) {
-            throw new RuntimeException("Limite de 5 reservas por semana atingido");
+            throw new RegraReservaException("Limite de 5 reservas por semana atingido");
         }
 
         List<Reserva> reservasUltimaSemana = reservaRepository
@@ -128,7 +128,7 @@ public class ReservaService {
         int duracaoMaximaPermitida = 960;
 
         if (duracaoTotalComNova > duracaoMaximaPermitida) {
-            throw new RuntimeException(
+            throw new RegraReservaException(
                     "Limite de 16 horas por semana excedido."
             );
         }
@@ -137,7 +137,7 @@ public class ReservaService {
     public Reserva criarReserva(DTOReservaRequest request, Usuario usuario) {
 
         PontoRecarga pontoRecarga = pontoRecargaRepository.findById(request.getPontoRecargaId())
-                .orElseThrow(() -> new RuntimeException("Ponto nao encontrado"));
+                .orElseThrow(() -> new PontoNaoEncontradoException("Ponto nao encontrado"));
 
         LocalDateTime inicio = request.getInicio();
         LocalDateTime fim = request.getFim();
@@ -147,7 +147,7 @@ public class ReservaService {
         }
 
         if (!verificarDisponibilidade(inicio, fim)) {
-            throw new RuntimeException("Horario Indisponivel");
+            throw new RegraReservaException("Horario Indisponivel");
         }
 
         Reserva reserva = new Reserva();
@@ -173,7 +173,7 @@ public class ReservaService {
         List<DTOReservaResponse> reservaResponses = new ArrayList<>();
 
         if (reservas.isEmpty()) {
-            throw new RuntimeException("Nao ha reservas");
+            throw new ReservaNaoEncontradaException("Nao ha reservas");
         }
 
         for (Reserva i : reservas) {
@@ -197,21 +197,21 @@ public class ReservaService {
     public void iniciarReserva(Integer idReserva, Usuario usuario) {
 
         Reserva reserva = reservaRepository.findById(idReserva)
-                .orElseThrow(() -> new RuntimeException("Reserva não encontrada"));
+                .orElseThrow(() -> new ReservaNaoEncontradaException("Reserva não encontrada"));
 
         if (!reserva.getUsuario().getId().equals(usuario.getId())) {
-            throw new RuntimeException("Esta reserva não pertence a você");
+            throw new ReservaNaoAutorizadaException("Esta reserva não pertence a você");
         }
 
         if (reserva.getStatusReserva() != StatusReserva.CONFIRMADA) {
-            throw new RuntimeException("Reserva não pode ser iniciada. Status atual: " + reserva.getStatusReserva());
+            throw new ReservaNaoPodeMudarStatusException("Reserva não pode ser iniciada. Status atual: " + reserva.getStatusReserva());
         }
 
         LocalDateTime agora = LocalDateTime.now();
         LocalDateTime inicioReserva = reserva.getInicio();
 
         if (agora.isBefore(inicioReserva)) {
-            throw new RuntimeException("Ainda não está no horário da reserva");
+            throw new ReservaNaoPodeMudarStatusException("Ainda não está no horário da reserva");
         }
 
         reserva.setStatusReserva(StatusReserva.EM_ANDAMENTO);
@@ -221,14 +221,14 @@ public class ReservaService {
     public void finalizarReserva(Integer idReserva, Usuario usuario) {
 
         Reserva reserva = reservaRepository.findById(idReserva)
-                .orElseThrow(() -> new RuntimeException("Reserva não encontrada"));
+                .orElseThrow(() -> new ReservaNaoEncontradaException("Reserva não encontrada"));
 
         if (!reserva.getUsuario().getId().equals(usuario.getId())) {
-            throw new RuntimeException("Esta reserva não pertence a você");
+            throw new ReservaNaoAutorizadaException("Esta reserva não pertence a você");
         }
 
         if (reserva.getStatusReserva() != StatusReserva.EM_ANDAMENTO) {
-            throw new RuntimeException("Reserva não pode ser finalizada. Status atual: " + reserva.getStatusReserva());
+            throw new ReservaNaoPodeMudarStatusException("Reserva não pode ser finalizada. Status atual: " + reserva.getStatusReserva());
         }
 
         reserva.setStatusReserva(StatusReserva.FINALIZADA);
@@ -246,14 +246,14 @@ public class ReservaService {
 
     public void cancelarReserva(Integer idReserva, Usuario usuario) {
         Reserva reserva = reservaRepository.findById(idReserva)
-                .orElseThrow(() -> new RuntimeException("Reserva não encontrada"));
+                .orElseThrow(() -> new ReservaNaoEncontradaException("Reserva não encontrada"));
 
         if (!reserva.getUsuario().getId().equals(usuario.getId())) {
-            throw new RuntimeException("Esta reserva não pertence a você");
+            throw new ReservaNaoAutorizadaException("Esta reserva não pertence a você");
         }
 
         if (reserva.getStatusReserva() != StatusReserva.CONFIRMADA) {
-            throw new RuntimeException("O status atual nao permite o cancelamento da reserva");
+            throw new ReservaNaoPodeMudarStatusException("O status atual nao permite o cancelamento da reserva");
         }
 
         reserva.setStatusReserva(StatusReserva.CANCELADA);

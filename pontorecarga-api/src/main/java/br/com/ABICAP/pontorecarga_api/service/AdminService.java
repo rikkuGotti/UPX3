@@ -3,6 +3,9 @@ package br.com.ABICAP.pontorecarga_api.service;
 import br.com.ABICAP.pontorecarga_api.dto.DTORelatorioConsumoResponse;
 import br.com.ABICAP.pontorecarga_api.dto.DTORelatorioListaCarrosResponse;
 import br.com.ABICAP.pontorecarga_api.dto.DTOReservaResponse;
+import br.com.ABICAP.pontorecarga_api.exception.UsuarioNaoAutenticadoException;
+import br.com.ABICAP.pontorecarga_api.exception.UsuarioNaoAutorizadoException;
+import br.com.ABICAP.pontorecarga_api.exception.UsuarioNaoEncontradoException;
 import br.com.ABICAP.pontorecarga_api.model.*;
 import br.com.ABICAP.pontorecarga_api.repository.CarroRepository;
 import br.com.ABICAP.pontorecarga_api.repository.PontoRecargaRepository;
@@ -10,7 +13,6 @@ import br.com.ABICAP.pontorecarga_api.repository.ReservaRepository;
 import br.com.ABICAP.pontorecarga_api.repository.UsuarioRepository;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -44,18 +46,20 @@ public class AdminService {
         String usuarioLogado = (String) session.getAttribute("USUARIO_LOGADO");
 
         if (usuarioLogado == null) {
-            throw new RuntimeException("Usuário não está logado");
+            throw new UsuarioNaoAutenticadoException("Usuário não está logado");
         }
 
         Usuario usuario = usuarioRepository.findByUsuario(usuarioLogado)
-                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+                .orElseThrow(() -> new UsuarioNaoEncontradoException("Usuário não encontrado"));
 
         if (usuario.getTipoUsuario().equals(TipoUsuario.USER)) {
-            throw new RuntimeException("Acesso negado. Apenas administradores.");
+            throw new UsuarioNaoAutorizadoException("Acesso negado. Apenas administradores.");
         }
 
         return usuario;
     }
+
+
 
     public List<DTORelatorioConsumoResponse> gerarRelatorioConsumo(LocalDate inicio, LocalDate fim) {
 
@@ -103,7 +107,7 @@ public List<DTORelatorioConsumoResponse> gerarRelatorioConsumo(LocalDate inicio,
         LocalDateTime fi = LocalDateTime.of(fim, LocalTime.of(23, 59, 59));
 
         Usuario usuario = usuarioRepository.findById(usuarioID)
-                .orElseThrow(() -> new RuntimeException("Usuario nao encontrado"));
+                .orElseThrow(() -> new UsuarioNaoEncontradoException("Usuario nao encontrado"));
 
         List<DTORelatorioConsumoResponse> responses = new ArrayList<>();
         List<PontoRecarga> pontos = pontoRecargaRepository.findAll();
@@ -241,7 +245,7 @@ public List<DTORelatorioConsumoResponse> gerarRelatorioConsumo(LocalDate inicio,
         LocalDateTime fi = LocalDateTime.of(fim, LocalTime.of(23, 59, 59));
 
         List<DTOReservaResponse> responses = new ArrayList<>();
-        Usuario usuario = usuarioRepository.findById(id).orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+        Usuario usuario = usuarioRepository.findById(id).orElseThrow(() -> new UsuarioNaoEncontradoException("Usuário não encontrado"));
         List<Reserva> reservas = reservaRepository.findByInicioBetweenAndStatusReservaAndUsuario(ini, fi, StatusReserva.CANCELADA, usuario );
 
         for(Reserva r : reservas){

@@ -58,7 +58,7 @@ public class AdminController {
         }
 
 
-        return ResponseEntity.ok("Sucesso");
+        return ResponseEntity.status(201).body("Ponto criado com sucesso");
     }
 
     @PostMapping("/criarponto")
@@ -68,8 +68,7 @@ public class AdminController {
 
         PontoRecarga ponto = pontoRecargaService.cadastrarPontoRecarga(request);
 
-
-        return ResponseEntity.status(200).body(ponto);
+        return ResponseEntity.status(201).body(ponto);
     }
 
     @GetMapping("/relatorio/consumo-moradores")
