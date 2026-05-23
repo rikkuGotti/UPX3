@@ -2,10 +2,12 @@ package br.com.ABICAP.pontorecarga_api.handler;
 
 import br.com.ABICAP.pontorecarga_api.exception.*;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @RestControllerAdvice
 public class ErroHandler {
@@ -88,6 +90,25 @@ public class ErroHandler {
         return ResponseEntity.status(422).body(Map.of(
                 "status", 422,
                 "mensagem", ex.getMessage()
+        ));
+    }
+
+
+
+
+
+
+    @ExceptionHandler(MethodArgumentNotValidException .class)
+    public ResponseEntity<Map<String, Object>> erroValidacao(MethodArgumentNotValidException ex) {
+        String erros = ex.getBindingResult()
+                .getFieldErrors()
+                .stream()
+                .map(erro -> erro.getField() + ": " + erro.getDefaultMessage())
+                .collect(Collectors.joining(", "));
+
+        return ResponseEntity.badRequest().body(Map.of(
+                "status", 400,
+                "mensagem", erros
         ));
     }
 }
