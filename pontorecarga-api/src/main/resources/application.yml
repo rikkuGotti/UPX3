@@ -22,6 +22,9 @@ spring:
       mode: embedded
 
 server:
+  error:
+    include-message: always
+    include-binding-errors: always
   servlet:
     session:
       timeout: 10080m
