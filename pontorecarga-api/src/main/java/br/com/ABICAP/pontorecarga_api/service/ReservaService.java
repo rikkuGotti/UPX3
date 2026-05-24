@@ -38,11 +38,11 @@ public class ReservaService {
         this.pontoRecargaRepository = pontoRecargaRepository;
     }
 
-    private boolean verificarDisponibilidade(LocalDateTime inicio, LocalDateTime fim) {
-        List<Reserva> reservas = reservaRepository.findAll();
+    private boolean verificarDisponibilidade(LocalDateTime inicio, LocalDateTime fim, Integer id) {
+        List<Reserva> reservas = reservaRepository.findByPontoRecargaId(id);
 
         for (Reserva i : reservas) {
-            if (i.getStatusReserva().equals(StatusReserva.CONFIRMADA)) {
+            if (i.getStatusReserva().equals(StatusReserva.CONFIRMADA) || i.getStatusReserva().equals(StatusReserva.EM_ANDAMENTO)) {
                 LocalDateTime inicioAtual = i.getInicio();
                 LocalDateTime fimAtual = i.getFim();
 
@@ -146,7 +146,9 @@ public class ReservaService {
             fim = fim.plusDays(1);
         }
 
-        if (!verificarDisponibilidade(inicio, fim)) {
+        Integer id = request.getPontoRecargaId();
+
+        if (!verificarDisponibilidade(inicio, fim, id)) {
             throw new RegraReservaException("Horario Indisponivel");
         }
 

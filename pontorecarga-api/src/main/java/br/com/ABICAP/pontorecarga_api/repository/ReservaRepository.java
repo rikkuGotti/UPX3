@@ -69,5 +69,7 @@ public interface ReservaRepository extends JpaRepository<Reserva, Integer> {
     List<Reserva> findByInicioBetweenAndStatusReserva(LocalDateTime ini, LocalDateTime fi, StatusReserva statusReserva);
 
     List<Reserva> findByInicioBetweenAndStatusReservaAndUsuario(LocalDateTime ini, LocalDateTime fi, StatusReserva statusReserva, Usuario usuario);
+
+    List<Reserva> findByPontoRecargaId(Integer id);
 }
 
