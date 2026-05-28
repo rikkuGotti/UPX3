@@ -22,3 +22,6 @@ server:
   servlet:
     session:
       timeout: 10080m
+      cookie:
+        same-site: none
+        secure: true
